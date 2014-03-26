@@ -25,7 +25,7 @@ void checkButtons(unsigned long cur)
   for(int i=0; i<numButs; ++i){
     if(cur-prev[i]>interval[i]){
       interval[i] = random(2000, 5000);
-      if(!(myledStates[i])||!(yourledStates[i])){
+      if(!(myledStates[i])&&!(yourledStates[i])){
         int x = random(0,2);
         if(x){
           myledStates[i] = HIGH;
@@ -65,7 +65,7 @@ void lose()
         myledStates[i] = !(myledStates[i]);
         yourledStates[i] = !(yourledStates[i]);
       }
-      delay(500);
+      delay(300);
     }
 }
   
