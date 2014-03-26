@@ -1,15 +1,19 @@
  //Blink without delay
 
-#define ledPin1 13
-#define ledPin2 12
+#define ledPin1 9
+#define ledPin2 10
+#define ledPin3 11
+#define ledPin4 12
 #define Button1 7
 #define Button2 6
 
 const int numButs = 2;
 const int numLights = 2;
-int ledPins[] = {ledPin1, ledPin2};
+int yourledPins[] = {ledPin1, ledPin2};
+int myledPins[] = {ledPin3, ledPin4};
 int Buttons[] = {Button1, Button2};
-int ledStates[] = {HIGH, HIGH};
+int yourledStates[] = {HIGH, HIGH};
+int myledStates[] = {HIGH, HIGH};
 
 long prev[] = {0, 0};
 long interval[] = {1000, 1000};
@@ -21,8 +25,13 @@ void checkButtons(unsigned long cur)
   for(int i=0; i<numButs; ++i){
     if(cur-prev[i]>interval[i]){
       interval[i] = random(2000, 5000);
-      if(!(ledStates[i])){
-        ledStates[i] = !(ledStates[i]);
+      if(!(myledStates[i])||!(yourledStates[i])){
+        int x = random(0,2);
+        if(x){
+          myledStates[i] = HIGH;
+        }else{
+          yourledStates[i]=HIGH;
+        }
       }else{
         Play = false;
       }
@@ -30,7 +39,8 @@ void checkButtons(unsigned long cur)
     }
     if(digitalRead(Buttons[i])){
       delay(1); //for stability
-      ledStates[i] = LOW;
+      myledStates[i] = LOW;
+      yourledStates[i] = LOW;
     }
   }
 }
@@ -38,30 +48,34 @@ void checkButtons(unsigned long cur)
 void writeLights()
 {
   for(int i=0; i<numLights; ++i){
-    digitalWrite(ledPins[i], ledStates[i]);
+    digitalWrite(myledPins[i], myledStates[i]);
+    digitalWrite(yourledPins[i], yourledStates[i]);
   }
 }
 
 void lose()
 {
-      for(int i = 0; i<numButs; ++i){
-      ledStates[i] = HIGH;
+    for(int i = 0; i<numButs; ++i){
+      myledStates[i] = HIGH;
+      yourledStates[i] = HIGH;
     }
     while(true){
+      writeLights();
       for(int i = 0; i<numButs; ++i){
-        digitalWrite(ledPins[i], ledStates[i]);
-        ledStates[i] = !(ledStates[i]);
+        myledStates[i] = !(myledStates[i]);
+        yourledStates[i] = !(yourledStates[i]);
       }
-      delay(100);
+      delay(500);
     }
 }
   
 void setup()
 {
   for(int i = 0; i<numButs; ++i){
-    pinMode(ledPins[i], OUTPUT);
+    pinMode(myledPins[i], OUTPUT);
+    pinMode(yourledPins[i], OUTPUT);
     pinMode(Buttons[i], INPUT);
-    digitalWrite(ledPins[i], ledStates[i]);
+    writeLights();
   } 
 }
 
