@@ -25,6 +25,8 @@ int herledStates[] = {HIGH, HIGH, HIGH};
 
 long prev[] = {0, 0, 0};
 long interval[] = {1000, 1000, 1000};
+long minint = 1000;
+long maxint = 5000;
 
 boolean Play = true;
 
@@ -32,7 +34,9 @@ void checkButtons(unsigned long cur)
 {
   for(int i=0; i<numButs; ++i){
     if(cur-prev[i]>interval[i]){
-      interval[i] = random(2000, 5000);
+      interval[i] = random(minint, maxint);
+      minint *= .95;
+      maxint *= .95;
       if(!(myledStates[i])&&!(yourledStates[i])&&!(herledStates[i])){
         int x = random(0,3);
         if(x==0){
