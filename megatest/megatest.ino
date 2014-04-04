@@ -25,8 +25,7 @@ LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I
 
 void setup()   /*----( SETUP: RUNS ONCE )----*/
 {
-  Serial.begin(9600);  // Used to type in characters
-
+  pinMode(2, INPUT);
   lcd.begin(16,2);         // initialize the lcd for 16 chars 2 lines and turn on backlight
 
 // ------- Quick 3 blinks of backlight  -------------
@@ -39,43 +38,35 @@ void setup()   /*----( SETUP: RUNS ONCE )----*/
   }
   lcd.backlight(); // finish with backlight on  
   
-//-------- Write characters on the display ----------------
-// NOTE: Cursor Position: CHAR, LINE) start at 0  
-  lcd.setCursor(3,0); //Start at character 4 on line 0
-  lcd.print("Hello, world!");
-  delay(1000);
-  lcd.setCursor(2,1);
-  lcd.print("From YourDuino");
-  delay(8000);
-// Wait and then tell user they can start the Serial Monitor and type in characters to
-// Display. (Set Serial Monitor option to "No Line Ending")
-  lcd.setCursor(0,0); //Start at character 0 on line 0
-  lcd.print("Start Serial Monitor");
-  lcd.setCursor(0,1);
-  lcd.print("Type chars 2 display");   
-
-
 }/*--(end setup )---*/
 
+boolean prev = false;
 
 void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
 {
-  {
-    // when characters arrive over the serial port...
-    if (Serial.available()) {
-      // wait a bit for the entire message to arrive
-      delay(100);
-      // clear the screen
+  if(digitalRead(2)){
+    if(prev){
+      ;
+    } else {
       lcd.clear();
-      // read all the available characters
-      while (Serial.available() > 0) {
-        // display each character to the LCD
-        lcd.write(Serial.read());
-      }
+      lcd.setCursor(0,0);
+      lcd.print("You are pressing");
+      lcd.setCursor(0,1);
+      lcd.print("the button.");
+      prev = true;
+    }
+  }else{
+    if(prev){
+      lcd.clear();
+      lcd.setCursor(0,0);
+      lcd.print("You suck");
+      prev = false;
+    } else {
+      ;
     }
   }
+  delay(50);
 
-}/* --(end main loop )-- */
 
+}
 
-/* ( THE END ) */
