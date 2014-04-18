@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define LCDS 1
+#define LCDS 4
 #define RedButton 2
 #define WhiteButton 3
 #define GreenButton 4
@@ -49,7 +49,14 @@ void checkButtons(unsigned long cur)
     if(cur-prev[i]>interval[i]){
       interval[i] = newint();
       if(!(lcdVals[i])){
-        lcdVals[i] = random(2,6);
+        switch(random(0,7)){
+          case 0:
+            lcdVals[i] = -1;
+            break;
+          default:
+            lcdVals[i] = random(2,6);
+            break;
+        }
         has_changed[i]=true;
       }else{
         Play = false;
@@ -61,13 +68,21 @@ void checkButtons(unsigned long cur)
   
   //This could get slow; I should avoid using nested for loops
   //I can just scroll through the lcd values
-  if(lcdVals[i]){
+  if(lcdVals[i]>0){
     if(digitalRead(Buts[lcdVals[i]-2])){
       lcds[i].clear();
       lcdVals[i] = 0;
       int remaining = (prev[i]+interval[i]-cur);
       prev[i] = prev[i] - remaining*.5;
     }
+  } else if(lcdVals[i]<0){
+      if(digitalRead(our_switch.pinnumber) == our_switch.desired){
+        our_switch.desired = !our_switch.desired;
+        lcds[i].clear();
+        lcdVals[i] = 0;
+        int remaining = (prev[i]+interval[i]-cur);
+        prev[i] = prev[i] - remaining*.5;      
+      }
   }
  }
 }
@@ -78,6 +93,16 @@ void writeLCD()
     if(has_changed[i]){
       lcds[i].clear();
       switch(lcdVals[i]){
+        case -1:
+          lcds[i].setCursor(0,0);
+          lcds[i].write("Turn the Switch");
+          lcds[i].setCursor(0,1);
+          if(our_switch.desired){
+            lcds[i].write("ON");
+          }else{
+            lcds[i].write("OFF");
+          }
+          break;
         case 2:
           lcds[i].setCursor(2, 0);
           lcds[i].write("Push the Red");
@@ -122,6 +147,7 @@ void setup()
   for(int i = 0; i<NumButs; ++i){
     pinMode(Buts[i], INPUT);
   }
+  pinMode(Switch, INPUT);
   for(int i = 0; i<LCDS; ++i){
     lcds[i].begin(16, 2);
   }
