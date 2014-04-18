@@ -17,55 +17,36 @@
 // set the LCD address to 0x27 for a 20 chars 4 line display
 // Set the pins on the I2C chip used for LCD connections:
 //                    addr, en,rw,rs,d4,d5,d6,d7,bl,blpol
-LiquidCrystal_I2C lcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
+LiquidCrystal_I2C mylcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
+LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+LiquidCrystal_I2C hislcd(0x25, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+LiquidCrystal_I2C herlcd(0x24, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 
 /*-----( Declare Variables )-----*/
 //none
 
+int i = 0;
 void setup()   /*----( SETUP: RUNS ONCE )----*/
 {
-  pinMode(2, INPUT);
-  lcd.begin(16,2);         // initialize the lcd for 16 chars 2 lines and turn on backlight
+  mylcd.begin(16,2);         // initialize the lcd for 16 chars 2 lines and turn on backlight
+  yourlcd.begin(16,2);
+  hislcd.begin(16,2);
+  herlcd.begin(16,2);
 
-// ------- Quick 3 blinks of backlight  -------------
-  for(int i = 0; i< 3; i++)
-  {
-    lcd.backlight();
-    delay(250);
-    lcd.noBacklight();
-    delay(250);
-  }
-  lcd.backlight(); // finish with backlight on  
-  
 }/*--(end setup )---*/
-
-boolean prev = false;
 
 void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
 {
-  if(digitalRead(2)){
-    if(prev){
-      ;
-    } else {
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("You are pressing");
-      lcd.setCursor(0,1);
-      lcd.print("the button.");
-      prev = true;
-    }
-  }else{
-    if(prev){
-      lcd.clear();
-      lcd.setCursor(0,0);
-      lcd.print("You suck");
-      prev = false;
-    } else {
-      ;
-    }
-  }
-  delay(50);
+  mylcd.clear();
+  mylcd.print(i);
+  yourlcd.clear();
+  yourlcd.print(++i);
+  hislcd.clear();
+  hislcd.print(++i);
+  herlcd.clear();
+  herlcd.print(++i);
+  delay(500);
 
 
 }

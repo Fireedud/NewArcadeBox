@@ -1,5 +1,3 @@
- //Blink without delay
-
 #define myledPin1 8
 #define myledPin2 11
 #define myledPin3 12
