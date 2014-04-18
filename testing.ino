@@ -13,7 +13,6 @@ LiquidCrystal_I2C hislcd(0x25, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 LiquidCrystal_I2C herlcd(0x24, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 int lcdVals[] = {0, 0, 0, 0};
-boolean has_changed[] = {false, false, false, false};
 LiquidCrystal_I2C lcds[] = {mylcd, yourlcd, hislcd, herlcd};
 
 const int NumButs = 4;
@@ -31,17 +30,17 @@ void checkButtons(unsigned long cur)
   for(int i=0; i<LCDS; ++i){
     if(cur-prev[i]>interval[i]){
       interval[i] = random(minint, maxint);
-      minint *= .98;
-      maxint *= .98;
+      minint *= .99;
+      maxint *= .99;
       if(!(lcdVals[i])){
         lcdVals[i] = random(2,6);
-        has_changed[i]=true;
       }else{
         Play = false;
+        hislcd.clear();
+        hislcd.setCursor(0,0);
+        hislcd.write(lcdVals[0]);
       }
       prev[i] = cur;
-    } else {
-      has_changed[i]=false;
     }
   }
   for(int i = 0; i<NumButs; ++i){
@@ -60,34 +59,32 @@ void checkButtons(unsigned long cur)
 void writeLCD()
 {
   for(int i=0; i<LCDS; ++i){
-    if(has_changed[i]){
-      lcds[i].clear();
-      switch(lcdVals[i]){
-        case 2:
-          lcds[i].setCursor(2, 0);
-          lcds[i].write("Push the Red");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-        case 3:
-          lcds[i].setCursor(1, 0);
-          lcds[i].write("Push the White");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-        case 4:
-          lcds[i].setCursor(1, 0);
-          lcds[i].write("Push the Green");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-        case 5:
-          lcds[i].setCursor(1, 0);
-          lcds[i].write("Push the Blue");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-      }
+    lcds[i].clear();
+    switch(lcdVals[i]){
+      case 2:
+        lcds[i].setCursor(0, 0);
+        lcds[i].write("Push the Red");
+        lcds[i].setCursor(5, 1);
+        lcds[i].write("Button");
+        break;
+      case 3:
+        lcds[i].setCursor(0, 0);
+        lcds[i].write("Push the White");
+        lcds[i].setCursor(5, 1);
+        lcds[i].write("Button");
+        break;
+      case 4:
+        lcds[i].setCursor(0, 0);
+        lcds[i].write("Push the Green");
+        lcds[i].setCursor(5, 1);
+        lcds[i].write("Button");
+        break;
+      case 5:
+        lcds[i].setCursor(0, 0);
+        lcds[i].write("Push the Blue");
+        lcds[i].setCursor(5, 1);
+        lcds[i].write("Button");
+        break;
     }
   }
 }
@@ -99,7 +96,7 @@ void lose()
     lcds[i].setCursor(0,0);
     lcds[i].write("You Lose!");
   }
-  delay(10000);
+  delay(1000);
 }
   
 void setup()
