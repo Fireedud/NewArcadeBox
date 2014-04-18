@@ -1,11 +1,12 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define LCDS 4
+#define LCDS 1
 #define RedButton 2
 #define WhiteButton 3
 #define GreenButton 4
 #define BlueButton 5
+#define Switch 6
 
 LiquidCrystal_I2C mylcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); 
 LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
@@ -19,6 +20,14 @@ LiquidCrystal_I2C lcds[] = {mylcd, yourlcd, hislcd, herlcd};
 const int NumButs = 4;
 int Buts[] = {RedButton, WhiteButton, GreenButton, BlueButton};
 
+struct switches{
+  int pinnumber;
+  int prev;
+  int desired;
+};
+
+struct switches our_switch = {Switch, LOW, LOW};
+
 long prev[] = {0, 0, 0, 0};
 long interval[] = {1000, 1000, 1000, 1000};
 long minint = 1000;
@@ -26,13 +35,19 @@ long maxint = 5000;
 
 boolean Play = true;
 
+int newint()
+{
+  int interval = random(minint, maxint);
+  minint *= .99;
+  maxint *= .99;
+  return interval;
+}
+
 void checkButtons(unsigned long cur)
 {
   for(int i=0; i<LCDS; ++i){
     if(cur-prev[i]>interval[i]){
-      interval[i] = random(minint, maxint);
-      minint *= .98;
-      maxint *= .98;
+      interval[i] = newint();
       if(!(lcdVals[i])){
         lcdVals[i] = random(2,6);
         has_changed[i]=true;
@@ -43,18 +58,18 @@ void checkButtons(unsigned long cur)
     } else {
       has_changed[i]=false;
     }
-  }
-  for(int i = 0; i<NumButs; ++i){
-    if(digitalRead(Buts[i])){
-      delay(1); //for stability
-      for(int j =0; j<LCDS; ++j){
-        if(lcdVals[j] == (i+2)) { 
-          lcds[j].clear();
-          lcdVals[j] = 0;
-        }
-      }
+  
+  //This could get slow; I should avoid using nested for loops
+  //I can just scroll through the lcd values
+  if(lcdVals[i]){
+    if(digitalRead(Buts[lcdVals[i]-2])){
+      lcds[i].clear();
+      lcdVals[i] = 0;
+      int remaining = (prev[i]+interval[i]-cur);
+      prev[i] = prev[i] - remaining*.5;
     }
   }
+ }
 }
 
 void writeLCD()
