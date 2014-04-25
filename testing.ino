@@ -1,12 +1,32 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define LCDS 4
-#define RedButton 2
-#define WhiteButton 3
-#define GreenButton 4
-#define BlueButton 5
-#define Switch 6
+#define LCDS 3
+
+struct things{
+  const int pinNumber;
+  const char type;
+  int cur;
+  int desired;
+  const char message1[17];
+  const char message2[17]; //the lcds have two rows of 16 characters (+'\0')
+};
+
+struct things FILLER = {0, '\0', LOW, LOW, "", ""};
+struct things WhiteButton = {2, 'b', LOW, HIGH, "Push White", ""};
+struct things Covered1 = {3, 's', LOW, HIGH, "Flip Covered1", ""};
+struct things Covered2 = {4, 's', LOW, HIGH, "Flip Covered2", ""};
+struct things RedSwitch = {5, 's', LOW, HIGH, "Flip Red", ""};
+struct things BlueSwitch = {6, 's', LOW, HIGH, "Flip Blue", ""};
+struct things BlueButton  = {7, 'b', LOW, HIGH, "Push Blue", ""};
+struct things RedButton = {8, 'b', LOW, HIGH, "Push Red", ""};
+
+const int NumThings = 7;
+
+//make sure array index matches pinNumber
+const int length = 9;
+struct things everything[] = {FILLER, FILLER, WhiteButton, Covered1, 
+  Covered2, RedSwitch, BlueSwitch, BlueButton, RedButton}; 
 
 LiquidCrystal_I2C mylcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); 
 LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
@@ -14,23 +34,11 @@ LiquidCrystal_I2C hislcd(0x25, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 LiquidCrystal_I2C herlcd(0x24, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 int lcdVals[] = {0, 0, 0, 0};
-boolean has_changed[] = {false, false, false, false};
 LiquidCrystal_I2C lcds[] = {mylcd, yourlcd, hislcd, herlcd};
-
-const int NumButs = 4;
-int Buts[] = {RedButton, WhiteButton, GreenButton, BlueButton};
-
-struct switches{
-  int pinnumber;
-  int prev;
-  int desired;
-};
-
-struct switches our_switch = {Switch, LOW, LOW};
 
 long prev[] = {0, 0, 0, 0};
 long interval[] = {1000, 1000, 1000, 1000};
-long minint = 1000;
+long minint = 2000;
 long maxint = 5000;
 
 boolean Play = true;
@@ -49,45 +57,41 @@ void checkButtons(unsigned long cur)
     if(cur-prev[i]>interval[i]){
       interval[i] = newint();
       if(!(lcdVals[i])){
-        switch(random(0,7)){
-          case 0:
-            lcdVals[i] = -1;
-            break;
-          default:
-            lcdVals[i] = random(2,6);
-            break;
+        int com = random(2, length);
+        while(!everything[com].pinNumber){
+          com = random(2, length); //There has to be a better way to do this
         }
-        has_changed[i]=true;
-      }else{
+        lcdVals[i] = everything[com].pinNumber;
+        lcds[i].clear();
+        lcds[i].setCursor(0,0);
+        lcds[i].write(everything[com].message1);
+        lcds[i].setCursor(0, 1);
+        lcds[i].write(everything[com].message2);
+        prev[i] = cur;
+        Serial.println(com);
+      } else {
         Play = false;
+        Serial.println(prev[i]);
+        Serial.println(cur);
       }
-      prev[i] = cur;
-    } else {
-      has_changed[i]=false;
     }
-  
-  //This could get slow; I should avoid using nested for loops
-  //I can just scroll through the lcd values
-  if(lcdVals[i]>0){
-    if(digitalRead(Buts[lcdVals[i]-2])){
-      lcds[i].clear();
-      lcdVals[i] = 0;
-      int remaining = (prev[i]+interval[i]-cur);
-      prev[i] = prev[i] - remaining*.5;
-    }
-  } else if(lcdVals[i]<0){
-      if(digitalRead(our_switch.pinnumber) == our_switch.desired){
-        our_switch.desired = !our_switch.desired;
+    if(lcdVals[i]){
+      struct things *mything = &everything[lcdVals[i]];
+      if(digitalRead(lcdVals[i]) == mything->desired){
         lcds[i].clear();
         lcdVals[i] = 0;
         int remaining = (prev[i]+interval[i]-cur);
-        prev[i] = prev[i] - remaining*.5;      
+        prev[i] = prev[i] - remaining*.5; //Give half the remaining time as break
+        if(mything->type == 's'){
+          mything->cur = mything->desired;
+          mything->desired = !(mything->desired);
+        }
       }
+    }
   }
- }
 }
 
-void writeLCD()
+/*void writeLCD()
 {
   for(int i=0; i<LCDS; ++i){
     if(has_changed[i]){
@@ -130,7 +134,7 @@ void writeLCD()
       }
     }
   }
-}
+}*/
 
 void lose()
 {
@@ -144,14 +148,13 @@ void lose()
   
 void setup()
 {
-  for(int i = 0; i<NumButs; ++i){
-    pinMode(Buts[i], INPUT);
+  for(int i = 0; i<length; ++i){
+    if(everything[i].pinNumber) pinMode(everything[i].pinNumber, INPUT);
   }
-  pinMode(Switch, INPUT);
   for(int i = 0; i<LCDS; ++i){
     lcds[i].begin(16, 2);
   }
-  
+  Serial.begin(9600);
 }
 
 void loop()
@@ -160,7 +163,7 @@ void loop()
    unsigned long cur = millis();
    checkButtons(cur);
    delay(1); //for stability when reading buttons
-   writeLCD();
+   //writeLCD();
    delay(15);
   } else {
     lose();
