@@ -1,7 +1,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 
-#define LCDS 3
+#define LCDS 2
 
 struct things{
   const int pinNumber;
@@ -20,13 +20,12 @@ struct things RedSwitch = {5, 's', LOW, HIGH, "Flip Red", ""};
 struct things BlueSwitch = {6, 's', LOW, HIGH, "Flip Blue", ""};
 struct things BlueButton  = {7, 'b', LOW, HIGH, "Push Blue", ""};
 struct things RedButton = {8, 'b', LOW, HIGH, "Push Red", ""};
-
-const int NumThings = 7;
+struct things Pot = {A0, 'p', 0, 2, "Slide to", ""};
 
 //make sure array index matches pinNumber
-const int length = 9;
+const int length = 10;
 struct things everything[] = {FILLER, FILLER, WhiteButton, Covered1, 
-  Covered2, RedSwitch, BlueSwitch, BlueButton, RedButton}; 
+  Covered2, RedSwitch, BlueSwitch, BlueButton, RedButton, Pot}; 
 
 LiquidCrystal_I2C mylcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); 
 LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
@@ -37,7 +36,7 @@ int lcdVals[] = {0, 0, 0, 0};
 LiquidCrystal_I2C lcds[] = {mylcd, yourlcd, hislcd, herlcd};
 
 long prev[] = {0, 0, 0, 0};
-long interval[] = {1000, 1000, 1000, 1000};
+long interval[] = {2000, 2000, 2000, 2000};
 long minint = 2000;
 long maxint = 5000;
 
@@ -51,33 +50,72 @@ int newint()
   return interval;
 }
 
+void pot(int screen)
+{
+  lcds[screen].clear();
+  lcds[screen].setCursor(0,0);
+  lcds[screen].write(Pot.message1);
+  int val = random(0,3);
+  lcds[screen].setCursor(0,1);
+  char t[1];
+  itoa(val, t, 10);
+  lcds[screen].write(t);
+  Pot.desired=val;
+}
+
+void checkPot(int screen){
+  int pos;
+  int val = analogRead(A0);
+  if(val < 20){
+    pos = 0;
+  } else if(815<val && val<920){ //arduino doesn't seem to like combined inequalities
+    pos = 1;
+  } else if(1000<val){
+    pos = 2;
+  } else{
+    pos = 3;
+  }
+  if(pos == Pot.desired){
+    lcds[screen].clear();
+    lcdVals[screen] = 0;
+    //I need to add the time change code
+    //I should probably just put it into a function
+  }
+}
+    
+
 void checkButtons(unsigned long cur)
 {
   for(int i=0; i<LCDS; ++i){
     if(cur-prev[i]>interval[i]){
       interval[i] = newint();
       if(!(lcdVals[i])){
-        int com = random(2, length);
-        while(!everything[com].pinNumber){
+        prev[i] = cur;
+        int com = random(2,length);
+        while(!everything[com].pinNumber || com == 4){
           com = random(2, length); //There has to be a better way to do this
         }
-        lcdVals[i] = everything[com].pinNumber;
-        lcds[i].clear();
-        lcds[i].setCursor(0,0);
-        lcds[i].write(everything[com].message1);
-        lcds[i].setCursor(0, 1);
-        lcds[i].write(everything[com].message2);
-        prev[i] = cur;
-        Serial.println(com);
+        //refactor this into a function
+        if(everything[com].type == 'p') {
+          lcdVals[i] = com;
+          pot(i);
+        } else {
+          lcdVals[i] = everything[com].pinNumber;
+          lcds[i].clear();
+          lcds[i].setCursor(0,0);
+          lcds[i].write(everything[com].message1);
+          lcds[i].setCursor(0, 1);
+          lcds[i].write(everything[com].message2);
+        }
       } else {
         Play = false;
-        Serial.println(prev[i]);
-        Serial.println(cur);
       }
     }
     if(lcdVals[i]){
       struct things *mything = &everything[lcdVals[i]];
-      if(digitalRead(lcdVals[i]) == mything->desired){
+      if(mything->type == 'p'){
+        checkPot(i);
+      } else if(digitalRead(lcdVals[i]) == mything->desired){
         lcds[i].clear();
         lcdVals[i] = 0;
         int remaining = (prev[i]+interval[i]-cur);
@@ -154,7 +192,6 @@ void setup()
   for(int i = 0; i<LCDS; ++i){
     lcds[i].begin(16, 2);
   }
-  Serial.begin(9600);
 }
 
 void loop()
