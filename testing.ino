@@ -13,15 +13,38 @@ struct things{
   const char message2[17]; //the lcds have two rows of 16 characters (+'\0')
 };
 
+//Note, I need to refactor the code to have the do_command
+//It'll be easier to make switches say two things
+//or have two buttons act as a switch
+
 struct things FILLER = {0, '\0', LOW, LOW, "", ""};
-//struct things WhiteButton = {2, 'b', LOW, HIGH, "Push White", ""};
-struct things Covered1 = {2, 's', LOW, HIGH, "LIGHTS!!", ""};
-struct things Covered2 = {3, 's', LOW, HIGH, "CAMERA!!!", ""};
-//struct things RedSwitch = {5, 's', LOW, HIGH, "Flip Red", ""};
-//struct things BlueSwitch = {6, 's', LOW, HIGH, "Flip Blue", ""};
-//struct things BlueButton  = {7, 'b', LOW, HIGH, "Push Blue", ""};
-//struct things RedButton = {8, 'b', LOW, HIGH, "Push Red", ""};
-struct things Pot = {11, 'p', 0, 2, "Slide to", ""}; //NOTE: not its actual pin
+struct things Lights = {2, , 's', LOW, HIGH, "LIGHTS!!", ""};
+struct things Camera = {3, 's', LOW, HIGH, "CAMERA!!!", ""};
+//struct things Action = { , 's', LOW, HIGH, "ACTION!!!!", ""};
+//struct things Stop = { , 'b', LOW, HIGH, "Stop", ""};
+//struct things Speed = { , 'b', LOW, HIGH, "Speed Up", ""};
+//struct things Hammer = { , 'h', LOW, HIGH, "", ""};
+//struct things DoorBell ??
+//struct things Key = { , 's', LOW, HIGH, "Unlock", "Next Level"};
+//struct things Lever = { , 'l', PIN1, PIN2, "", ""};
+//struct things PullKnob = { , 'b', LOW, HIGH, "Pull Yourself", "Together"};
+//Fire is very special
+//struct things Fire = { , 'f', LOW, HIGH, "", ""};
+//struct things Cannon = { , 'b', LOW, HIGH, "Fire your", "L4z0r"};
+//struct things LShield = { , 'b', LOW, HIGH, "Shield Port", ""};
+//struct things RShield = { , 'b', LOW, HIGH, "Shield Starboard", ""};
+//struct things LCover = { , 'b', LOW, HIGH, "Provide Cover", "Left Flank"};
+//struct things RCover = { , 'b', LOW, HIGH, "Provide Cover", "Right Flank"};
+//struct things BCover = { , 'b', LOW, HIGH, "Protect the", "Rearguard"};
+//struct things Nitro = { , 'e', LOW, HIGH, "", ""};
+//struct things Missiles = { , 'm', LOW, HIGH, "", ""};
+//struct things Amp = { , 'l', LOW, HIGH, "", ""};
+//struct things Five = { , 'b', LOW, HIGH, "High-five!", ""};
+//struct things CowBell = { , 'b', LOW, HIGH, "I have a fever...", "More Cowbell"};
+//struct things Table = { , 'b', LOW, HIGH, "Flip the Table", ""};
+
+struct things Pot = {11, 'p', 0, 2, "Panic Level:", ""}; //NOTE: not its actual pin
+//Joystick
 struct things South = {4, 'b', LOW, HIGH, "South", ""};
 struct things West = {6, 'b', LOW, HIGH, "West", ""};
 struct things North = {5, 'b', LOW, HIGH, "North", ""};
@@ -31,14 +54,16 @@ struct things NE = {10, '2', LOW, 0, "Northeast", ""};
 struct things NW = {7, '2', LOW, 1, "Northwest", ""};
 struct things SouthEast = {8, '2', LOW, 2, "Southeast", ""};
 struct things SW = {9, '2', LOW, 3, "Southwest", ""};
-//struct things WhiteButton = {10, 'b', LOW, HIGH, "White", ""};
 
 //make sure array index matches pinNumber
 const int length = 10;
-struct things everything[] = {FILLER, FILLER, Covered1, Covered2, South, North, West, East, SouthEast, SW, NE};
+struct things everything[] = {FILLER, FILLER, Lights, Camera, 
+              South, North, West, East, SouthEast, SW, NE};
 
 Adafruit_NeoPixel mystrip = Adafruit_NeoPixel(15, 8, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel yourstrip = Adafruit_NeoPixel(15, 9, NEO_GRB + NEO_KHZ800);
+//Adafruit_NeoPixel hisstrip = Adafruit_NeoPixel(15, PIN, NEO_GRB + NEO_KHZ800);
+//Adafruit_NeoPixel herstrip = Adafruit_NeoPixel(15, PIN, NEO_GRB + NEO_KHZ800);
 
 Adafruit_NeoPixel strips[] = {mystrip, yourstrip};
 
@@ -371,11 +396,9 @@ void diag(int screen, int dir)
        }
        break;
      case 2://SE
-       Serial.println("SE");
        if(digitalRead(South.pinNumber) && digitalRead(East.pinNumber)){
          lcds[screen].clear();
          lcdVals[screen] = 0;
-         Serial.println("done");
        }
        break;
      case 3://SW
@@ -397,9 +420,17 @@ void pot(int screen)
   delay(10);
   int val = random(0,3);
   lcds[screen].setCursor(0,1);
-  char t[1];
-  itoa(val, t, 10);
-  lcds[screen].write(t);
+  switch(val){
+    case 0:
+      lcds[screen].write("Zen");
+      break;
+    case 1:
+      lcds[screen].write("Unsettled");
+      break;
+    case 2:
+      lcds[screen].write("Finals");
+      break;
+  }
   delay(10);
   Pot.desired=val;
 }
