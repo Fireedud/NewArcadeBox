@@ -52,9 +52,10 @@ struct things everything[] = {FILLER, FILLER, WhiteButton, Covered1,
 
 void setup()   /*----( SETUP: RUNS ONCE )----*/
 {
-  mylcd.begin(16,2);
-  yourlcd.begin(16,2);
-  pinMode(A0, INPUT);
+//  mylcd.begin(16,2);
+//  yourlcd.begin(16,2);
+//  pinMode(A0, INPUT);
+Serial.begin(9600);
   //pinMode(A0, INPUT);
   //yourlcd.begin(16,2);
   //hislcd.begin(16,2);
@@ -64,24 +65,29 @@ void setup()   /*----( SETUP: RUNS ONCE )----*/
 
 void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
 {
-  mylcd.setCursor(0,0);
-  mylcd.write("here1");
-  delay(10);
-  yourlcd.setCursor(0,0);
-  yourlcd.write("here1");
-  delay(10);
-  int val = analogRead(0);
-  delay(10);
-  mylcd.setCursor(0,1);
-  char t[6];
-  itoa(val, t, 10);
-  mylcd.write(t);
-  delay(10);
-  yourlcd.setCursor(0,1);
-  yourlcd.write("Here2");  
-  delay(200);
-  mylcd.clear();
-  yourlcd.clear();
+//  mylcd.setCursor(0,0);
+  //mylcd.write("here1");
+  //delay(10);
+  //yourlcd.setCursor(0,0);
+  //yourlcd.write("here1");
+  //delay(10);
+  //int val = analogRead(0);
+  //delay(10);
+  //mylcd.setCursor(0,1);
+  //char t[6];
+  //itoa(val, t, 10);
+  //mylcd.write(t);
+  //delay(10);
+  //yourlcd.setCursor(0,1);
+  //yourlcd.write("Here2");  
+  //delay(200);
+  //mylcd.clear();
+  //yourlcd.clear();
+  Serial.println("Table");
+  Serial.println(digitalRead(10));
+  Serial.println("Reach");
+  Serial.println(digitalRead(28));
+  delay(1000);
 
   
   //N.B.:
@@ -119,5 +125,4 @@ void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
   //} else {
     //Serial.println(3);
   //}
-  delay(300);
-}
+  }

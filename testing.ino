@@ -2,7 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <Adafruit_NeoPixel.h>
 
-#define LCDS 2
+#define LCDS 3
 
 struct things{
   const int pinNumber;
@@ -18,54 +18,65 @@ struct things{
 //or have two buttons act as a switch
 
 struct things FILLER = {0, '\0', LOW, LOW, "", ""};
-struct things Lights = {2, , 's', LOW, HIGH, "LIGHTS!!", ""};
-struct things Camera = {3, 's', LOW, HIGH, "CAMERA!!!", ""};
-//struct things Action = { , 's', LOW, HIGH, "ACTION!!!!", ""};
-//struct things Stop = { , 'b', LOW, HIGH, "Stop", ""};
-//struct things Speed = { , 'b', LOW, HIGH, "Speed Up", ""};
-//struct things Hammer = { , 'h', LOW, HIGH, "", ""};
+//struct things Lights = {2, , 's', LOW, HIGH, "LIGHTS!!", ""};
+//struct things Camera = {3, 's', LOW, HIGH, "CAMERA!!", ""};
+//struct things Action = { , 's', LOW, HIGH, "ACTION!!", ""};
+struct things Stop = {8, 'b', LOW, HIGH, "Stop", ""};
+struct things Go = {6, 'b', LOW, HIGH, "Go", ""};
+struct things Speed = {7, 'b', LOW, HIGH, "Speed Up", ""};
+struct things Hammer = {9, 'h', LOW, HIGH, "", ""};
 //struct things DoorBell ??
 //struct things Key = { , 's', LOW, HIGH, "Unlock", "Next Level"};
-//struct things Lever = { , 'l', PIN1, PIN2, "", ""};
+//struct things Lever = { 2, 'l', LOW, 0, "", ""}; //the second value will be 0 or 1,
+//this will be the value of the pin to be checked, because I need to check both.
 //struct things PullKnob = { , 'b', LOW, HIGH, "Pull Yourself", "Together"};
 //Fire is very special
 //struct things Fire = { , 'f', LOW, HIGH, "", ""};
-//struct things Cannon = { , 'b', LOW, HIGH, "Fire your", "L4z0r"};
-//struct things LShield = { , 'b', LOW, HIGH, "Shield Port", ""};
-//struct things RShield = { , 'b', LOW, HIGH, "Shield Starboard", ""};
-//struct things LCover = { , 'b', LOW, HIGH, "Provide Cover", "Left Flank"};
-//struct things RCover = { , 'b', LOW, HIGH, "Provide Cover", "Right Flank"};
-//struct things BCover = { , 'b', LOW, HIGH, "Protect the", "Rearguard"};
+struct things Cannon = { 24, 'c', LOW, HIGH, "", ""};
+struct things Piano = {29, 'b', LOW, HIGH, "Play the Piano", ""};
+struct things LShield = { 34, 'b', LOW, HIGH, "Shield Port", ""};
+struct things RShield = {31, 'b', LOW, HIGH, "Shield Starboard", ""};
+struct things LCover = {35, 'b', LOW, HIGH, "Provide Cover", "Port Flank"};
+struct things RCover = {33, 'b', LOW, HIGH, "Provide Cover", "Starboard Flank"};
+struct things BCover = {30 , 'b', LOW, HIGH, "Protect the", "Aft"};
+struct things Trans = {36, 's', LOW, HIGH, "Turn the", "Transmorgifier"};
 //struct things Nitro = { , 'e', LOW, HIGH, "", ""};
-//struct things Missiles = { , 'm', LOW, HIGH, "", ""};
-//struct things Amp = { , 'l', LOW, HIGH, "", ""};
-//struct things Five = { , 'b', LOW, HIGH, "High-five!", ""};
+struct things Missiles = {23, 'm', LOW, HIGH, "", ""};
+struct things Reach = {28, 'b', LOW, HIGH, "Reach in", ""};
+struct things Amp = {26, 'l', LOW, 0, "", ""};
+struct things Five = {25, 'b', LOW, HIGH, "High-five!", ""};
 //struct things CowBell = { , 'b', LOW, HIGH, "I have a fever...", "More Cowbell"};
-//struct things Table = { , 'b', LOW, HIGH, "Flip the Table", ""};
-
-struct things Pot = {11, 'p', 0, 2, "Panic Level:", ""}; //NOTE: not its actual pin
+struct things Table = {10, 'b', LOW, HIGH, "Flip the Table", ""};
+struct things Engine = {32, 'b', LOW, HIGH, "Start the Engine", ""};
+struct things Pot = {14, 'p', 0, 2, "Panic Level:", ""}; //NOTE: not its actual pin
 //Joystick
-struct things South = {4, 'b', LOW, HIGH, "South", ""};
-struct things West = {6, 'b', LOW, HIGH, "West", ""};
-struct things North = {5, 'b', LOW, HIGH, "North", ""};
-struct things East = {7, 'b', LOW, HIGH, "East", ""};
+struct things South = {11, 'b', LOW, HIGH, "South", ""};
+struct things West = {12, 'b', LOW, HIGH, "West", ""};
+struct things North = {13, 'b', LOW, HIGH, "North", ""};
+struct things East = {22, 'b', LOW, HIGH, "East", ""};
 //The pin is just a filler. It's the same as its index in everything[]
-struct things NE = {10, '2', LOW, 0, "Northeast", ""};
-struct things NW = {7, '2', LOW, 1, "Northwest", ""};
-struct things SouthEast = {8, '2', LOW, 2, "Southeast", ""};
-struct things SW = {9, '2', LOW, 3, "Southwest", ""};
+struct things NE = {0, '2', LOW, 0, "Northeast", ""};
+struct things NW = {1, '2', LOW, 1, "Northwest", ""};
+struct things SouthEast = {2, '2', LOW, 2, "Southeast", ""};
+struct things SW = {3, '2', LOW, 3, "Southwest", ""};
 
 //make sure array index matches pinNumber
-const int length = 10;
-struct things everything[] = {FILLER, FILLER, Lights, Camera, 
-              South, North, West, East, SouthEast, SW, NE};
+const int length = 36;
+//struct things everything[] = {FILLER, FILLER, Lights, Camera, 
+//              South, North, West, East, SouthEast, SW, NE};
 
-Adafruit_NeoPixel mystrip = Adafruit_NeoPixel(15, 8, NEO_GRB + NEO_KHZ800);
-Adafruit_NeoPixel yourstrip = Adafruit_NeoPixel(15, 9, NEO_GRB + NEO_KHZ800);
-//Adafruit_NeoPixel hisstrip = Adafruit_NeoPixel(15, PIN, NEO_GRB + NEO_KHZ800);
+struct things everything[] = {NE, NW, SouthEast, SW, FILLER, FILLER, Go, Speed, Stop, Hammer, 
+        FILLER, South, West, North, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, 
+        FILLER, East, Missiles, Cannon, Five, FILLER, FILLER, Reach, Piano, BCover, RShield,
+        Engine, RCover, LShield, LCover, Trans};
+
+//Needs to be PWM
+Adafruit_NeoPixel mystrip = Adafruit_NeoPixel(15, 2, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel yourstrip = Adafruit_NeoPixel(15, 3, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel hisstrip = Adafruit_NeoPixel(15, 4, NEO_GRB + NEO_KHZ800);
 //Adafruit_NeoPixel herstrip = Adafruit_NeoPixel(15, PIN, NEO_GRB + NEO_KHZ800);
 
-Adafruit_NeoPixel strips[] = {mystrip, yourstrip};
+Adafruit_NeoPixel strips[] = {yourstrip, hisstrip, mystrip};
 
 LiquidCrystal_I2C mylcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); 
 LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
@@ -73,12 +84,12 @@ LiquidCrystal_I2C hislcd(0x25, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 LiquidCrystal_I2C herlcd(0x24, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 int lcdVals[] = {0, 0, 0, 0};
-LiquidCrystal_I2C lcds[] = {yourlcd, herlcd};
+LiquidCrystal_I2C lcds[] = {mylcd, herlcd, hislcd};
 
 long prev[] = {0, 0, 0, 0};
-long interval[] = {2000, 2000, 2000, 2000};
-long minint = 2000;
-long maxint = 5000;
+long interval[] = {4000, 4000, 4000, 4000};
+long minint = 10000;
+long maxint = 12000;
 
 boolean Play = true;
 
@@ -387,24 +398,33 @@ void diag(int screen, int dir)
       if(digitalRead(North.pinNumber) && digitalRead(East.pinNumber)){
         lcds[screen].clear();
         lcdVals[screen]=0;
+        //reduceTime(screen);
       }
       break;
      case 1: //NW
        if(digitalRead(North.pinNumber) && digitalRead(West.pinNumber)){
          lcds[screen].clear();
          lcdVals[screen] = 0;
+         //reduceTime(screen);
        }
        break;
      case 2://SE
+       Serial.println("SE");
+       Serial.println(digitalRead(South.pinNumber));
+       Serial.println(digitalRead(East.pinNumber));
+       Serial.println(digitalRead(North.pinNumber));
+       Serial.println(digitalRead(West.pinNumber));
        if(digitalRead(South.pinNumber) && digitalRead(East.pinNumber)){
          lcds[screen].clear();
          lcdVals[screen] = 0;
+         //reduceTime(screen);
        }
        break;
      case 3://SW
        if(digitalRead(South.pinNumber) && digitalRead(West.pinNumber)){
          lcds[screen] .clear();
          lcdVals[screen] = 0;
+         //reduceTime(screen);
        }
        break;
   }
@@ -458,11 +478,76 @@ void checkPot(int screen)
     lcds[screen].clear();
     lcdVals[screen] = 0;
     delay(10);
-    //I need to add the time change code
-    //I should probably just put it into a function
+    //reduceTime(screen);
   }
 }
     
+void setCommand(int screen, int com)
+{
+  lcdVals[screen] = com;
+  lcds[screen].clear();
+  lcds[screen].setCursor(0,0);
+  switch(everything[com].type){
+    case 'p':
+      pot(screen);
+      break;
+    case 'h':
+      if(digitalRead(com)){
+            lcds[screen].write("Stop Hammer Time");
+            everything[com].desired = LOW;
+      } else {
+            lcds[screen].write("Enter");
+            lcds[screen].setCursor(0,1);
+            lcds[screen].write("Hammer Space");
+            everything[screen].desired = HIGH;
+      }
+      break;
+    case 'm':
+          if(digitalRead(everything[com].pinNumber)){
+            lcds[screen].write("...You can stop");
+            lcds[screen].setCursor(0,1);
+            lcds[screen].write("firing missiles");
+            everything[com].desired = LOW;
+          } else {
+            lcds[screen].write("Fire missiles");
+            everything[com].desired = HIGH;
+          }
+          break;
+     case 'c':
+          if(digitalRead(everything[com].pinNumber)){
+            lcds[screen].write("...You can stop");
+            lcds[screen].setCursor(0,1);
+            lcds[screen].write("firing cannons");
+            everything[com].desired = LOW;
+          } else {
+            lcds[screen].write("Fire cannons");
+            everything[com].desired = HIGH;
+          }
+          break;
+     case 'b':
+     case 's':
+     case '2':
+            lcds[screen].write(everything[com].message1);
+            lcds[screen].setCursor(0, 1);
+            lcds[screen].write(everything[com].message2);
+            break;
+     case 'l':
+            if(everything[com].desired){
+              everything[com].desired = 0;
+              lcds[screen].write("Go to 0");
+            } else {
+              everything[com].desired = 1;
+              lcds[screen].write("Turn it up to 11");
+            }
+            break;
+  }
+}
+        
+void reduceTime(int i, unsigned long cur)
+{
+        int remaining = (prev[i]+interval[i]-cur);
+        prev[i] = prev[i] - remaining*.5; //Give half the remaining time as break
+}
 
 void checkButtons(unsigned long cur)
 {
@@ -471,27 +556,12 @@ void checkButtons(unsigned long cur)
       interval[i] = newint();
       if(!(lcdVals[i])){
         prev[i] = cur;
-        int com = random(2, length);
+        int com = random(0, length);
         while(!everything[com].pinNumber){
-          com = random(2, length); //There has to be a better way to do this
+          com = random(0, length); //There has to be a better way to do this
           Serial.println("random");
         }
-        //refactor this into a function
-        if(everything[com].type == 'p') {
-          lcdVals[i] = com;
-          Serial.println(com);
-          pot(i);
-        } else {
-          lcdVals[i] = everything[com].pinNumber;
-          Serial.println(com);
-          lcds[i].clear();
-          lcds[i].setCursor(0,0);
-          lcds[i].write(everything[com].message1);
-          delay(1);
-          lcds[i].setCursor(0, 1);
-          lcds[i].write(everything[com].message2);
-          delay(1);
-        }
+          setCommand(i, com);
       } else {
         Play = false;
         Serial.println(lcdVals[i]);
@@ -500,9 +570,11 @@ void checkButtons(unsigned long cur)
         Serial.println(prev[i]);
       }
     }
+    //refactor this into a function
     if(lcdVals[i]){
       //struct things *mything = &everything[lcdVals[i]]; //to save typing
       Serial.println(everything[lcdVals[i]].type);
+      Serial.println(digitalRead(lcdVals[i]));
       //Serial.println("help");
       if(everything[lcdVals[i]].type == 'p'){
         checkPot(i);
@@ -510,13 +582,18 @@ void checkButtons(unsigned long cur)
       } else if(everything[lcdVals[i]].type == '2'){
         Serial.println("2");
         diag(i, everything[lcdVals[i]].desired);
-      }else if(digitalRead(lcdVals[i]) == everything[lcdVals[i]].desired){
+      } else if(everything[lcdVals[i]].type == 'l'){
+        if(digitalRead(lcdVals[i]+everything[lcdVals[i]].desired)){
+          lcds[i].clear();
+          lcdVals[i] = 0;
+          reduceTime(i, cur);
+        }
+      } else if(digitalRead(lcdVals[i]) == everything[lcdVals[i]].desired){
         delay(1);
         lcds[i].clear();
         Serial.println(lcdVals[i]);
         lcdVals[i] = 0;
-        int remaining = (prev[i]+interval[i]-cur);
-        prev[i] = prev[i] - remaining*.5; //Give half the remaining time as break
+        reduceTime(i, cur);
         if(everything[lcdVals[i]].type == 's'){
           everything[lcdVals[i]].cur = everything[lcdVals[i]].desired;
           everything[lcdVals[i]].desired = !(everything[lcdVals[i]].desired);
@@ -525,51 +602,6 @@ void checkButtons(unsigned long cur)
     }
   }
 }
-
-/*void writeLCD()
-{
-  for(int i=0; i<LCDS; ++i){
-    if(has_changed[i]){
-      lcds[i].clear();
-      switch(lcdVals[i]){
-        case -1:
-          lcds[i].setCursor(0,0);
-          lcds[i].write("Turn the Switch");
-          lcds[i].setCursor(0,1);
-          if(our_switch.desired){
-            lcds[i].write("ON");
-          }else{
-            lcds[i].write("OFF");
-          }
-          break;
-        case 2:
-          lcds[i].setCursor(2, 0);
-          lcds[i].write("Push the Red");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-        case 3:
-          lcds[i].setCursor(1, 0);
-          lcds[i].write("Push the White");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-        case 4:
-          lcds[i].setCursor(1, 0);
-          lcds[i].write("Push the Green");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-        case 5:
-          lcds[i].setCursor(1, 0);
-          lcds[i].write("Push the Blue");
-          lcds[i].setCursor(5, 1);
-          lcds[i].write("Button");
-          break;
-      }
-    }
-  }
-}*/
 
 void lose()
 {
@@ -628,9 +660,7 @@ void setup()
   for(int i = 0; i<length; ++i){
     if(everything[i].pinNumber) pinMode(everything[i].pinNumber, INPUT);
   }
-  pinMode(8, OUTPUT);
-  pinMode(9, OUTPUT);
-  //pinMode(A0, INPUT); //just double checking
+  pinMode(A0, INPUT); //just double checking
   for(int i = 0; i<LCDS; ++i){
     lcds[i].begin(16, 2);
   }
@@ -640,6 +670,9 @@ void setup()
     strips[i].begin();
     strips[i].show();
   }
+  pinMode(2, OUTPUT);
+  pinMode(3, OUTPUT);
+  pinMode(4, OUTPUT);
 }
 
 void health(long cur)
