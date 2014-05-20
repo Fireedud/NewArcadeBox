@@ -26,7 +26,7 @@ struct things Go = {6, 'b', LOW, HIGH, "Go", ""};
 struct things Speed = {7, 'b', LOW, HIGH, "Speed Up", ""};
 struct things Hammer = {9, 'h', LOW, HIGH, "", ""};
 struct things DoorBell = {41, 'b', LOW, HIGH, "Ring the", "Door Bell"};
-//struct things Key = { , 's', LOW, HIGH, "Unlock", "Next Level"};
+struct things Key = {42, 's', LOW, HIGH, "Unlock", "Next Level"};
 //struct things Lever = { 2, 'l', LOW, 0, "", ""}; //the second value will be 0 or 1,
 //this will be the value of the pin to be checked, because I need to check both.
 //struct things PullKnob = { , 'b', LOW, HIGH, "Pull Yourself", "Together"};
@@ -57,18 +57,17 @@ struct things East = {22, 'b', LOW, HIGH, "East", ""};
 //The pin is just a filler. It's the same as its index in everything[]
 struct things NE = {0, '2', LOW, 0, "Northeast", ""};
 struct things NW = {1, '2', LOW, 1, "Northwest", ""};
-struct things SouthEast = {2, '2', LOW, 2, "Southeast", ""};
+struct things SouthEast = {2, '2', LOW, 2, "Southeast", ""}; // SE is apparently a macro in some li
 struct things SW = {3, '2', LOW, 3, "Southwest", ""};
 
 //make sure array index matches pinNumber
-const int length = 42;
-//struct things everything[] = {FILLER, FILLER, Lights, Camera, 
-//              South, North, West, East, SouthEast, SW, NE};
+const int length = 43;
 
 struct things everything[] = {NE, NW, SouthEast, SW, FILLER, FILLER, Go, Speed, Stop, Hammer, 
-        FILLER, South, West, North, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, 
+        FILLER, South, West, North, Pot, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, 
         FILLER, East, Missiles, Cannon, Five, FILLER, FILLER, Reach, Piano, BCover, RShield,
-        Engine, RCover, LShield, LCover, Trans, CowBell, Lights, Camera, Action, DoorBell};
+        Engine, RCover, LShield, LCover, Trans, CowBell, Lights, Camera, Action, DoorBell,
+        Key};
 
 //Needs to be PWM
 Adafruit_NeoPixel mystrip = Adafruit_NeoPixel(15, 2, NEO_GRB + NEO_KHZ800);
@@ -269,12 +268,13 @@ void checkButtons(unsigned long cur)
       interval[i] = newint();
       if(!(lcdVals[i])){
         prev[i] = cur;
-        int com = random(0, length);
+        int com = random(0, 2);
+        com = 42;
         while(!everything[com].pinNumber){
           com = random(0, length); //There has to be a better way to do this
           Serial.println("random");
         }
-          setCommand(i, com);
+        setCommand(i, com);
       } else {
         Play = false;
         Serial.println(lcdVals[i]);
@@ -305,12 +305,14 @@ void checkButtons(unsigned long cur)
         delay(1);
         lcds[i].clear();
         Serial.println(lcdVals[i]);
-        lcdVals[i] = 0;
         reduceTime(i, cur);
         if(everything[lcdVals[i]].type == 's'){
+          Serial.println("switching");
           everything[lcdVals[i]].cur = everything[lcdVals[i]].desired;
           everything[lcdVals[i]].desired = !(everything[lcdVals[i]].desired);
         }
+        lcdVals[i] = 0; //this needs to be after the switch
+        //otherwise switches will never switch
       }
     }
   }
