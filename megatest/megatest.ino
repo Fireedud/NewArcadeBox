@@ -18,7 +18,7 @@
 // Set the pins on the I2C chip used for LCD connections:
 //                    addr, en,rw,rs,d4,d5,d6,d7,bl,blpol
 LiquidCrystal_I2C mylcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);  // Set the LCD I2C address
-LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
+//LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 //LiquidCrystal_I2C hislcd(0x25, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 //LiquidCrystal_I2C herlcd(0x24, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
@@ -52,16 +52,32 @@ struct things everything[] = {FILLER, FILLER, WhiteButton, Covered1,
 
 void setup()   /*----( SETUP: RUNS ONCE )----*/
 {
-//  mylcd.begin(16,2);
+  mylcd.begin(16,2);
 //  yourlcd.begin(16,2);
 //  pinMode(A0, INPUT);
-Serial.begin(9600);
+//Serial.begin(9600);
   //pinMode(A0, INPUT);
   //yourlcd.begin(16,2);
   //hislcd.begin(16,2);
   //herlcd.begin(16,2);
+  pinMode(A0, INPUT);
+  Serial.begin(9600);
+}
 
-}/*--(end setup )---*/
+void panic(int val)
+{
+  mylcd.clear();
+  if(val < 200){
+    mylcd.write("Zen");
+  }else if(868<val && val<942){
+    mylcd.write("Unsettled");
+  } else if(1000<val){
+    mylcd.write("Finals");
+  }
+  Serial.println(val);
+  delay(100);
+}
+  
 
 void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
 {
@@ -83,12 +99,10 @@ void loop()   /*----( LOOP: RUNS CONSTANTLY )----*/
   //delay(200);
   //mylcd.clear();
   //yourlcd.clear();
-  Serial.println("Table");
-  Serial.println(digitalRead(10));
-  Serial.println("Reach");
-  Serial.println(digitalRead(28));
-  delay(1000);
 
+  panic(analogRead(A0));
+  delay(15);
+  
   
   //N.B.:
   //North is red

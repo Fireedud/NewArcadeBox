@@ -2,7 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 #include <Adafruit_NeoPixel.h>
 
-#define LCDS 3
+#define LCDS 4
 
 struct things{
   const int pinNumber;
@@ -18,14 +18,14 @@ struct things{
 //or have two buttons act as a switch
 
 struct things FILLER = {0, '\0', LOW, LOW, "", ""};
-//struct things Lights = {2, , 's', LOW, HIGH, "LIGHTS!!", ""};
-//struct things Camera = {3, 's', LOW, HIGH, "CAMERA!!", ""};
-//struct things Action = { , 's', LOW, HIGH, "ACTION!!", ""};
+struct things Lights = {38, 's', LOW, HIGH, "LIGHTS!!", ""};
+struct things Camera = {39, 's', LOW, HIGH, "CAMERA!!!", ""};
+struct things Action = {40, 's', LOW, HIGH, "ACTION!!!!", ""};
 struct things Stop = {8, 'b', LOW, HIGH, "Stop", ""};
 struct things Go = {6, 'b', LOW, HIGH, "Go", ""};
 struct things Speed = {7, 'b', LOW, HIGH, "Speed Up", ""};
 struct things Hammer = {9, 'h', LOW, HIGH, "", ""};
-//struct things DoorBell ??
+struct things DoorBell = {41, 'b', LOW, HIGH, "Ring the", "Door Bell"};
 //struct things Key = { , 's', LOW, HIGH, "Unlock", "Next Level"};
 //struct things Lever = { 2, 'l', LOW, 0, "", ""}; //the second value will be 0 or 1,
 //this will be the value of the pin to be checked, because I need to check both.
@@ -45,7 +45,7 @@ struct things Missiles = {23, 'm', LOW, HIGH, "", ""};
 struct things Reach = {28, 'b', LOW, HIGH, "Reach in", ""};
 struct things Amp = {26, 'l', LOW, 0, "", ""};
 struct things Five = {25, 'b', LOW, HIGH, "High-five!", ""};
-//struct things CowBell = { , 'b', LOW, HIGH, "I have a fever...", "More Cowbell"};
+struct things CowBell = {37, 'b', LOW, HIGH, "I have a fever", "...More Cowbell"};
 struct things Table = {10, 'b', LOW, HIGH, "Flip the Table", ""};
 struct things Engine = {32, 'b', LOW, HIGH, "Start the Engine", ""};
 struct things Pot = {14, 'p', 0, 2, "Panic Level:", ""}; //NOTE: not its actual pin
@@ -61,22 +61,22 @@ struct things SouthEast = {2, '2', LOW, 2, "Southeast", ""};
 struct things SW = {3, '2', LOW, 3, "Southwest", ""};
 
 //make sure array index matches pinNumber
-const int length = 36;
+const int length = 42;
 //struct things everything[] = {FILLER, FILLER, Lights, Camera, 
 //              South, North, West, East, SouthEast, SW, NE};
 
 struct things everything[] = {NE, NW, SouthEast, SW, FILLER, FILLER, Go, Speed, Stop, Hammer, 
         FILLER, South, West, North, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, 
         FILLER, East, Missiles, Cannon, Five, FILLER, FILLER, Reach, Piano, BCover, RShield,
-        Engine, RCover, LShield, LCover, Trans};
+        Engine, RCover, LShield, LCover, Trans, CowBell, Lights, Camera, Action, DoorBell};
 
 //Needs to be PWM
 Adafruit_NeoPixel mystrip = Adafruit_NeoPixel(15, 2, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel yourstrip = Adafruit_NeoPixel(15, 3, NEO_GRB + NEO_KHZ800);
 Adafruit_NeoPixel hisstrip = Adafruit_NeoPixel(15, 4, NEO_GRB + NEO_KHZ800);
-//Adafruit_NeoPixel herstrip = Adafruit_NeoPixel(15, PIN, NEO_GRB + NEO_KHZ800);
+Adafruit_NeoPixel herstrip = Adafruit_NeoPixel(15, 5, NEO_GRB + NEO_KHZ800);
 
-Adafruit_NeoPixel strips[] = {yourstrip, hisstrip, mystrip};
+Adafruit_NeoPixel strips[] = {yourstrip, hisstrip, mystrip, herstrip};
 
 LiquidCrystal_I2C mylcd(0x27, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE); 
 LiquidCrystal_I2C yourlcd(0x26, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
@@ -84,7 +84,7 @@ LiquidCrystal_I2C hislcd(0x25, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 LiquidCrystal_I2C herlcd(0x24, 2, 1, 0, 4, 5, 6, 7, 3, POSITIVE);
 
 int lcdVals[] = {0, 0, 0, 0};
-LiquidCrystal_I2C lcds[] = {mylcd, herlcd, hislcd};
+LiquidCrystal_I2C lcds[] = {mylcd, herlcd, hislcd, yourlcd};
 
 long prev[] = {0, 0, 0, 0};
 long interval[] = {4000, 4000, 4000, 4000};
@@ -463,9 +463,9 @@ void checkPot(int screen)
   int val = analogRead(0);
   Serial.println("wtf?");
   delay(10);
-  if(val < 20){
+  if(val < 200){
     pos = 0;
-  } else if(815<val && val<920){ //arduino doesn't seem to like combined inequalities
+  } else if(868<val && val<942){ //arduino doesn't seem to like combined inequalities
     pos = 1;
   } else if(1000<val){
     pos = 2;
