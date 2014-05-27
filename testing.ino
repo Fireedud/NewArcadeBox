@@ -29,9 +29,9 @@ struct things DoorBell = {41, 'b', LOW, HIGH, "Ring the", "Door Bell"};
 struct things Key = {42, 's', LOW, HIGH, "Unlock", "Next Level"};
 //struct things Lever = { 2, 'l', LOW, 0, "", ""}; //the second value will be 0 or 1,
 //this will be the value of the pin to be checked, because I need to check both.
-//struct things PullKnob = { , 'b', LOW, HIGH, "Pull Yourself", "Together"};
+struct things PullKnob = { 43, 'b', LOW, HIGH, "Pull Yourself", "Together"};
 //Fire is very special
-//struct things Fire = { , 'f', LOW, HIGH, "", ""};
+struct things Fire = { 44, 'b', LOW, HIGH, "FIRE!!!!!", ""};
 struct things Cannon = { 24, 'c', LOW, HIGH, "", ""};
 struct things Piano = {29, 'b', LOW, HIGH, "Play the Piano", ""};
 struct things LShield = { 34, 'b', LOW, HIGH, "Shield Port", ""};
@@ -61,13 +61,13 @@ struct things SouthEast = {2, '2', LOW, 2, "Southeast", ""}; // SE is apparently
 struct things SW = {3, '2', LOW, 3, "Southwest", ""};
 
 //make sure array index matches pinNumber
-const int length = 43;
+const int length = 45;
 
 struct things everything[] = {NE, NW, SouthEast, SW, FILLER, FILLER, Go, Speed, Stop, Hammer, 
         FILLER, South, West, North, Pot, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, 
         FILLER, East, Missiles, Cannon, Five, FILLER, FILLER, Reach, Piano, BCover, RShield,
         Engine, RCover, LShield, LCover, Trans, CowBell, Lights, Camera, Action, DoorBell,
-        Key};
+        Key, PullKnob, Fire};
 
 //Needs to be PWM
 Adafruit_NeoPixel mystrip = Adafruit_NeoPixel(15, 2, NEO_GRB + NEO_KHZ800);
@@ -268,8 +268,7 @@ void checkButtons(unsigned long cur)
       interval[i] = newint();
       if(!(lcdVals[i])){
         prev[i] = cur;
-        int com = random(0, 2);
-        com = 42;
+        int com = random(0, length);
         while(!everything[com].pinNumber){
           com = random(0, length); //There has to be a better way to do this
           Serial.println("random");
