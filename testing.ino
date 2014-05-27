@@ -1,6 +1,7 @@
 #include <Wire.h>
 #include <LiquidCrystal_I2C.h>
 #include <Adafruit_NeoPixel.h>
+#include <EEPROM.h>
 
 #define LCDS 4
 
@@ -63,7 +64,7 @@ struct things SW = {3, '2', LOW, 3, "Southwest", ""};
 //make sure array index matches pinNumber
 const int length = 45;
 
-struct things everything[] = {NE, NW, SouthEast, SW, FILLER, FILLER, Go, Speed, Stop, Hammer, 
+struct things everything[] = {FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, Go, Speed, Stop, Hammer, 
         FILLER, South, West, North, Pot, FILLER, FILLER, FILLER, FILLER, FILLER, FILLER, 
         FILLER, East, Missiles, Cannon, Five, FILLER, FILLER, Reach, Piano, BCover, RShield,
         Engine, RCover, LShield, LCover, Trans, CowBell, Lights, Camera, Action, DoorBell,
@@ -319,6 +320,7 @@ void checkButtons(unsigned long cur)
 
 void lose()
 {
+  EEPROM.write(0,random(0,256)); //change the initialization everytime
   for(int i = 0; i<LCDS; ++i){
     lcds[i].clear();
     lcds[i].setCursor(0,0);
@@ -387,6 +389,7 @@ void setup()
   pinMode(2, OUTPUT);
   pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
+  randomSeed(EEPROM.read(0)); //I don't which address is best to use
 }
 
 void health(long cur)
